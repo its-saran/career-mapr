@@ -1,7 +1,6 @@
-`import Scrape from "../services/naukriScrape.js";
-import Search from "../services/naukriSearch.js";
-import proxy from '../config/proxy.json' assert { type: "json" };`
-
+import Scrape from "../services/indeedScrape.js";
+import Search from "../services/indeedSearch.js";
+import proxy from '../config/proxy.json' assert { type: "json" };
 
 class Controller {
     constructor(config, searchQuery, serviceType) {
@@ -51,6 +50,7 @@ class Controller {
             try {
                 this.search = new Search(this.searchQuery, this.config);
                 await this.search.start();
+                await this.search.stop();
                 console.log(`Search Finished`);
                 console.log(`Total jobs: ${this.search.totalJobs}`);
                 this.controllerStatus.startSearch = true
@@ -64,6 +64,7 @@ class Controller {
             try {
                 this.scrape = new Scrape(this.searchQuery, this.config);
                 await this.scrape.start();
+                await this.scrape.stop();
                 console.log(`Scraping Finished`);
                 console.log(this.scrape.jobs);
                 this.controllerStatus.startScrape = true
@@ -74,7 +75,7 @@ class Controller {
     }
     async start() {
         console.log(`Keyword: ${this.searchQuery.jobKeyword}, Location: ${this.searchQuery.jobLocation}`);
-        console.log(`Running Naukri ${this.serviceType}`);
+        console.log(`Running Indeed ${this.serviceType}`);
 
         await this.checkQueries()
         try {
@@ -93,5 +94,4 @@ class Controller {
     }
 }
 
-export const naukriController =  (config, searchQuery, serviceType) => new Controller (config, searchQuery, serviceType)
-
+export const indeedController =  (config, searchQuery, serviceType) => new Controller (config, searchQuery, serviceType)

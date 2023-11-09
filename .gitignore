@@ -141,5 +141,6 @@ dist
 
 
 secrets/
+resources/
 config/proxy.json
 # End

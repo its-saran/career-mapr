@@ -23,6 +23,34 @@
         "uniqueIdName": "cmId",
         "uniqueIdPrefix": "N-"
     },
-    "linkedin": {},
-    "indeed": {}
+    "linkedin": {
+        "delay": 2000,
+        "maxJobs": 970,
+        "startPage": 1,
+        "proxyStatus": false,
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+        "viewportSize": {
+            "height": 631, 
+            "width": 1366
+        }
+    },
+    "indeed": {
+        "delay": 3000,
+        "maxJobs": 20,
+        "startPage": 1,
+        "proxyStatus": false,
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+        "viewportSize": {
+            "height": 631, 
+            "width": 1366
+        },
+        "headers": {
+            "accept": "application/json",
+            "accept-encoding": "gzip, deflate, br",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/json",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
+        }
+    },
+    "chromePath": "./resources/chrome-win64/chrome.exe"
 }
