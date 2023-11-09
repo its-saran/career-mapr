@@ -1,0 +1,28 @@
+{ 
+    "naukri": {
+        "proxyStatus": false,
+        "headers": {
+            "accept": "application/json",
+            "accept-encoding": "gzip, deflate, br",
+            "accept-language": "en-US,en;q=0.9",
+            "appid": 109,
+            "Clientid": "d3skt0p",
+            "content-type": "application/json",
+            "systemid": 109,
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
+        },
+        "noOfResults": 100,
+        "delay": 1000,
+        "logPath": "Logs/Naukri/",
+        "maxJobs": 1000000,
+        "maxJobsDemo": 100,
+        "maxSeconds": 520,
+        "serviceName": "Naukri",
+        "sortBy": "rl",
+        "startPage": 1,
+        "uniqueIdName": "cmId",
+        "uniqueIdPrefix": "N-"
+    },
+    "linkedin": {},
+    "indeed": {}
+}
