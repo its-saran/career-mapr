@@ -4,30 +4,30 @@ import utils from '../utils/helper.js';
 
 class Scrape {
     constructor(searchQuery, config) {
-        // Validate input parameters
         if (!searchQuery || !config) {
             throw new Error("searchQuery and config parameters are required.");
         }
 
         // Initialize class properties
+        this.config = config.naukri
         this.proxyInfo = 'Not connected';
         this.totalJobs = null;
         this.jobs = []
 
-        this.platform = config.serviceName
-        this.noOfResults = config.noOfResults
-        this.delay = config.delay
-        this.maxTime = config.maxSeconds * 1000
+        this.platform = this.config.serviceName
+        this.noOfResults = this.config.noOfResults
+        this.delay = this.config.delay
+        this.maxTime = this.config.maxSeconds * 1000
         // Check if proxy is enabled in the configuration and create a proxy
-        if (config.proxyStatus) {
+        if (this.config.proxyStatus) {
             this.proxy = {
-                host: config.proxy.host,
-                port: config.proxy.port,
-                proxyAuth: `${config.proxy.username}:${config.proxy.password}`
+                host: this.config.proxy.host,
+                port: this.config.proxy.port,
+                proxyAuth: `${this.config.proxy.username}:${this.config.proxy.password}`
         }}
 
         this.axiosConfig = {
-            headers: config.headers
+            headers: this.config.headers
         };
 
 
@@ -37,8 +37,8 @@ class Scrape {
         this.jobLocation = jobLocation && encodeURIComponent(jobLocation.toLowerCase());
         this.sortBy = sortBy && encodeURIComponent(sortBy.toLowerCase());
         this.jobExperience = jobExperience
-        this.maxJobs = maxJobs || config.maxJobs;
-        this.startPage = startPage || config.startPage;
+        this.maxJobs = maxJobs || this.config.maxJobs;
+        this.startPage = startPage || this.config.startPage;
 
     }
     async initialize() {

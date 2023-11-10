@@ -5,6 +5,11 @@ import path from 'path';
 
 class Search {
     constructor(searchQuery, config) {
+        if (!searchQuery || !config) {
+            throw new Error("searchQuery and config parameters are required.");
+        }
+
+        // Initialize class properties
         this.config = config.indeed
         this.launchOptions = {
             headless: 'new',

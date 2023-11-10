@@ -1,6 +1,8 @@
 import createError from 'http-errors';
 import moment from 'moment-timezone';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import path from 'path';
 
 const utils = {
     waitFor: delay => new Promise(resolve => setTimeout(resolve, delay)),
@@ -45,7 +47,30 @@ const utils = {
     addId : (array, Idkey, Idvalue) => array.map(item => ({...item, [Idkey]: `${Idvalue}`})),
     addUniqueId : (array, Idkey, IdvaluePrefix) => array.map(item => ({...item, [Idkey]: `${IdvaluePrefix}`+`${uuidv4()}`})),
     addObjectInArray : (array, key, value) => array.map(item => ({...item, [key]: value})),
-    capitalizeString: (string) => string.charAt(0).toUpperCase() + string.slice(1)
+    capitalizeString: (string) => string.charAt(0).toUpperCase() + string.slice(1),
+    createJSON: (JSObject, folderPath, fileName) => {
+
+        if (JSObject) {
+            const jsonString = JSON.stringify(JSObject, null, 2);
+            const filePath = path.join(folderPath, fileName);
+
+            // Create the folder if it doesn't exist
+            fs.mkdir(folderPath, { recursive: true }, (err) => {
+                if (err) {
+                    console.error('Error creating folder:', err);
+                } else {
+                    // Write the JSON file
+                    fs.writeFile(filePath, jsonString, 'utf-8', (err) => {
+                    if (err) {
+                        console.error('Error writing JSON file:', err);
+                    } else {
+                        console.log('JSON file has been saved:', filePath);
+                    }
+                    });
+                }
+            });
+        } 
+    }
 }
 
 export default utils;

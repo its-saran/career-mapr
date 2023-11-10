@@ -1,14 +1,21 @@
-import config from './config/config.json' assert { type: "json" };
-import { naukriController } from './controllers/naukriController.js';
-import { indeedController } from './controllers/indeedController.js';
-
+import { serviceController } from './controllers/serviceController.js';
 
 const searchQuery = {
     jobKeyword: "Python", 
-    jobLocation: "chennai"
+    jobLocation: "chennai",
+    maxJobs: 50
 }
-const serviceType = "search"
+const serviceName = "naukri"
+const serviceType = "scrape"
+const folderPath = "./outputs"
+const fileName = "jobs"
+const fileType = ".json"
 
-// naukriController(config.naukri, searchQuery, serviceType);
-indeedController(config, searchQuery, serviceType);
+await serviceController(searchQuery, serviceName, serviceType, folderPath, fileName, fileType);
+
+
+
+
+
+
 

@@ -1,15 +1,22 @@
 import axios from 'axios'
 import tunnel from 'tunnel';
+import { load } from 'cheerio';
+import utils from '../utils/helper.js'
+
 
 class Search {
     constructor(searchQuery, config) {
+        if (!searchQuery || !config) {
+            throw new Error("searchQuery and config parameters are required.");
+        }
+
         // Initialize class properties
-        this.config = config.naukri
-        this.platform = "Naurki"
+        this.config = config.linkedin
+        this.platform = 'Linkedin';
         this.proxyInfo = 'Not connected';
         this.totalJobs = null;
 
-        // Check if proxy is enabled in the configuration and create a proxy
+        //Check if proxy is enabled in the configuration and create a proxy
         if (this.config.proxyStatus) {
             this.proxy = {
                 host: this.config.proxy.host,
@@ -21,11 +28,12 @@ class Search {
             headers: this.config.headers
         };
 
+
         // Encode and assign the encoded lowercase job keyword and location from the search query
         this.jobKeyword = searchQuery.jobKeyword && encodeURIComponent(searchQuery.jobKeyword.toLowerCase());
         this.jobLocation = searchQuery.jobLocation && encodeURIComponent(searchQuery.jobLocation.toLowerCase());
-        this.jobExperience = searchQuery.jobExperience
     }
+
     async initialize() {
         try {
             console.log(`Initializing search engine`);
@@ -39,6 +47,7 @@ class Search {
             throw error
         }
     }
+
     async checkProxy() {
         try {
             console.log(`Checking proxy..`)
@@ -47,42 +56,49 @@ class Search {
             // Get IP information from NORD VPN - IP locator
             const proxyCheckResponse = await axios.get(proxyCheckUrl, this.axiosConfig);
             this.proxyInfo = proxyCheckResponse.data
-            console.log(this.proxyInfo)
             console.log(`Proxy working properly`)
         } catch (error) {
             throw error
         }
     }
+
     async search() {
         try {
             console.log(`Started searching on ${this.platform}`)
+            let url = `https://in.linkedin.com/jobs/search?position=1&pageNum=1`
 
-            const pageNo = 1
-            let url = `https://www.naukri.com/jobapi/v3/search?searchType=adv&pageNo=${pageNo}`
+            // Append job keyword and/or location to the URL if provided
             if (this.jobLocation && this.jobKeyword) {
-                url = url + `&urlType=search_by_key_loc&keyword=${this.jobKeyword}&location=${this.jobLocation}`
+                url = url + `&keywords=${this.jobKeyword}&location=${this.jobLocation}`
             } else if (this.jobLocation && !this.jobKeyword) {
-                url = url + `&urlType=search_by_location&searchType=adv&location=${this.jobLocation}`
+                url = url + `&location=${this.jobLocation}`
             } else if (!this.jobLocation && this.jobKeyword) {
-                url = url + `&urlType=search_by_keyword&keyword=${this.jobKeyword}`
+                url = url + `&keywords=${this.jobKeyword}`
             }
-            this.jobExperience !== undefined && (url += `&experience=${this.jobExperience}`);
             console.log(url)
 
-            // Send a request to the Naukri job search URL
+            // Send a request to the LinkedIn job search URL
             const response = await axios.get(url, this.axiosConfig);
-            const data = response.data
-            this.totalJobs = data.noOfJobs
+            const html = response.data
+
+            // Load the HTML data into a Cheerio object
+            const $ = load(html);
+            const jobCountElement = $('.results-context-header__job-count');
+
+            this.totalJobs = jobCountElement.text();
+
         } catch (error) {
             throw error
         }
     }
+
     async start() {
         try {
             console.log(`Starting search`);
-            
+
             // Initialize the search engine
             await this.initialize();
+
             // Check proxy connection if enabled
             if (this.proxy) {
                 await this.checkProxy();
@@ -97,8 +113,3 @@ class Search {
 }
 
 export default Search;
-
-
-
-
-

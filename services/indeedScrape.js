@@ -6,6 +6,11 @@ import utils from '../utils/helper.js'
 
 class Scrape {
     constructor(searchQuery, config) {
+        if (!searchQuery || !config) {
+            throw new Error("searchQuery and config parameters are required.");
+        }
+
+        // Initialize class properties
         this.config = config.indeed
         this.launchOptions = {
             headless: 'new',
