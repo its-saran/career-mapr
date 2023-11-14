@@ -10,31 +10,25 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 
 ## Features
 
-### 1. Multi-platform Scraping
-- **LinkedIn:** Gather job listings from the world's largest professional network.
-- **Indeed:** Collect job information from one of the leading job search engines.
-- **Naukri:** Retrieve job listings from one of India's most popular job portals.
+- **Multi-platform Scraping**: Extracting data from various sources, including LinkedIn, Indeed, and Naukri.
 
-### 2. Stealth Mode
-- **Bypass Anti-Scraping Measures:** Career Mapr includes a stealth mode that helps you bypass anti-scraping measures implemented by websites, ensuring a smooth and uninterrupted scraping process.
+- **Stealth Mode**: Includes a stealth mode that helps you bypass anti-scraping measures implemented by websites, ensuring a smooth and uninterrupted scraping process.
 
-### 3. Proxy Support
-- **Enhanced Anonymity:** Utilize proxies to maintain anonymity and avoid IP blocking during scraping. Career Mapr seamlessly integrates with proxy services for a reliable and secure scraping experience.
+- **Proxy Support**: Utilize proxies to maintain anonymity and avoid IP blocking during scraping. Career Mapr seamlessly integrates with proxy services for a reliable and secure scraping experience.
 
-### 4. Customizable Job Filters
-- **Refine Your Search:** Set specific filters to narrow down job listings based on criteria such as location, industry, job type, and more. Customize the scraping process according to your requirements.
+- **Customizable Job Filters**: Set specific filters to narrow down job listings based on criteria such as location, industry, job type, and more. Customize the scraping process according to your requirements.
 
-### 5. Data Enrichment
-- **Comprehensive Information:** Retrieve detailed job information, including job title, company name, location, salary, and other relevant details. Career Mapr ensures you get comprehensive data for analysis.
+- **Data Enrichment**: Retrieve detailed job information, including job title, company name, location, salary, and other relevant details. Career Mapr ensures you get comprehensive data for analysis.
 
-### 6. Export to JSON and Excel
-- **JSON Output:** Save scraped data in a structured JSON format for easy integration into other applications.
-- **Excel Output:** Generate Excel spreadsheets with job details, making it convenient for further analysis and reporting.
+- **Export to JSON and Excel**: Supports both Excel and JSON formats for seamless integration and analysis of scraped data.
+
 
 ## Getting Started
 
 ### Prerequisites
 - Node.js installed on your machine
+
+- Chrome or Chromium must be installed, and the location must be specified in the config.json file under chromePath. (Eg: './chrome-win64/chrome.exe')
 
 ### Installation
 1. Clone the repository: `git clone https://github.com/its-saran/career-mapr.git`
@@ -45,15 +39,27 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 1. Customize your scraping parameters in the index.js file. A sample is already given. searchQuery, serviceName, serviceType, folderPath, fileName, and fileType are the six parameters.
 
 
-| Parameters       | Values                      |     Type     |     Example      |
-| :--------------: | ------------------------:   |  ---------:  |     -------:     |
-|  serviceName     |   naukri, linkedin, indeed  |    String    |     'naukri'     |
-|  serviceType     |   scrape, search            |    String    |     'scrape'     |
-|  folderPath      |      custom                 |    String    |     './Outputs'  |
-|  fileName        |      custom                 |    String    |     'jobs'       |
-|  fileType        |     .json, .xlsx            |    String    |     '.json'      |
+    | serviceName      | serviceType     |     Supported search queries              |
+    | :--------------: | ------------:   |  ------------------------------:          |   
+    |  naukri          |   search        |    jobKeyword, jobLocation, jobExperience |
+    |  naukri          |   scrape        |    jobKeyword, jobLocation, jobExperience, sortBy, maxJobs, startPage |
+    |  linkedin        |   search        |    jobKeyword, jobLocation, jobExperience |
+    |  linkedin        |   scrape        |    jobKeyword, jobLocation, jobExperience, maxJobs, startPage |
+    |  indeed          |   search        |    jobKeyword, jobLocation|
+    |  indeed          |   scrape        |    jobKeyword, jobLocation, maxJobs, startPage |
+
+
+    | Parameters       | Values                      |     Type     |     Example      |
+    | :--------------: | ------------------------:   |  ---------:  |     -------:     |
+    |  serviceName     |   naukri, linkedin, indeed  |    String    |     'naukri'     |
+    |  serviceType     |   scrape, search            |    String    |     'scrape'     |
+    |  folderPath      |      custom                 |    String    |     './Outputs'  |
+    |  fileName        |      custom                 |    String    |     'jobs'       |
+    |  fileType        |     .json, .xlsx            |    String    |     '.json'      |
 
 2. Run the scraper: `npm start`
+
+3. The output file will be generated in the specified directory
 
 ## Configuration
 
