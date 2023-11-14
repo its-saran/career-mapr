@@ -38,7 +38,7 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 ### Usage
 1. Customize your scraping parameters in the index.js file. A sample is already given. searchQuery, serviceName, serviceType, folderPath, fileName, and fileType are the six parameters.
 
-    **Search queries**
+    - **Search queries**
 
     | serviceName      | serviceType     |     Supported search queries              |
     | :--------------: | ------------:   |  ------------------------------:          |   
@@ -50,7 +50,7 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
     |  indeed          |   scrape        |    jobKeyword, jobLocation, maxJobs, startPage |
 
 
-    **Other parameters**
+    - **Other parameters**
 
     | Parameters       | Values                      |     Type     |     Example      |
     | :--------------: | ------------------------:   |  ---------:  |     -------:     |
@@ -63,6 +63,8 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 2. Run the scraper: `npm start`
 
 3. The output file will be generated in the specified directory
+
+4. To use a proxy, create a file named proxy.json in './config'. An example is found in './config' named example_proxy.json.
 
 ## Configuration
 
