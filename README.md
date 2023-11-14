@@ -28,7 +28,7 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 ### Prerequisites
 - Node.js installed on your machine
 
-- Chrome or Chromium must be installed, and the location must be specified in the config.json file under chromePath. (Eg: './chrome-win64/chrome.exe')
+- Chrome or Chromium must be installed, and its location must be specified in the config.json file under chromePath (e.g., './chrome-win64/chrome.exe').
 
 ### Installation
 1. Clone the repository: `git clone https://github.com/its-saran/career-mapr.git`
@@ -38,6 +38,7 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 ### Usage
 1. Customize your scraping parameters in the index.js file. A sample is already given. searchQuery, serviceName, serviceType, folderPath, fileName, and fileType are the six parameters.
 
+    **Search queries**
 
     | serviceName      | serviceType     |     Supported search queries              |
     | :--------------: | ------------:   |  ------------------------------:          |   
@@ -48,6 +49,8 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
     |  indeed          |   search        |    jobKeyword, jobLocation|
     |  indeed          |   scrape        |    jobKeyword, jobLocation, maxJobs, startPage |
 
+
+    **Other parameters**
 
     | Parameters       | Values                      |     Type     |     Example      |
     | :--------------: | ------------------------:   |  ---------:  |     -------:     |
