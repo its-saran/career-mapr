@@ -59,12 +59,11 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 
 ### outputConfig 
 
-    | Options                   |      Type                   |    Values             |
-    | --------------            | ------------------------    |  ---------           |
-    |  fileName (required)      |      string                 |    custom             |
-    |  fileType (required)      |      string                 |    json, xlsx, csv    |
-    |  folderPath (optional)    |      string                 |    custom             |
-
+    | Options             | Type   | Values          |
+    | ------------------- | ------ | --------------- |
+    | fileName (required) | string | custom          |
+    | fileType (required) | string | json, xlsx, csv |
+    | folderPath (optional)| string | custom          |
 
 2. Run the scraper: `npm start`
 
