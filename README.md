@@ -4,7 +4,6 @@
 
 Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, and Axios. It empowers you to extract job information from major platforms like LinkedIn, Indeed, and Naukri. Packed with features such as stealth mode and proxy support, Career Mapr offers a seamless way to collect, analyze, and export job data in JSON and Excel formats.
 
-
 ```diff
 ! Disclaimer: If you intend to use this scraper multiple times a day, it is advisable to use a proxy to prevent potential issues.
 ```
@@ -23,7 +22,6 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 
 - **Export to Mutliplt Formats**: Supports '.xlsx, '.json' and '.csv' formats for seamless integration and analysis of scraped data.
 
-
 ## Prerequisites
 - Node.js installed on your machine
 
@@ -36,36 +34,30 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 4. Specify chrome or chromium location in the config.json file under chromePath (e.g., './chrome-win64/chrome.exe').
 
 ## Usage
-1. Customize your scraping options in the index.js file. jobConfig and ouputConfig are the two parameters.
+1. Customize your scraping options in the 'index.js' file. jobConfig and ouputConfig are the two parameters. An example is given below.
 
-### jobConfig
+```javascript
+// index.js
+import { serviceController } from './controllers/serviceController.js';
 
-    | Options          |      Type       |                Values                       |
-    | :--------------: | ------------:   |  ------------------------------:            |    
-    |  serviceName     |   string        |    naukri, linkedin, indeed, all	           |
-    |  serviceType     |   string        |    search, scrape                           |
-    |  searchQuery     |   object        |    Search query options are given below     |
+const jobConfig = {
+    searchQuery: {
+        jobKeyword: "Python", 
+        jobLocation: "chennai",
+        jobExperience: 1,
+        maxJobs: 5
+    },
+    serviceName : "naukri",
+    serviceType : "scrape",
+}
+const ouputConfig = {
+    fileName : "jobs",
+    fileType : "xlsx",
+}
 
-#### SearchQuery options
+await serviceController(jobConfig, ouputConfig);
 
-
-    | serviceName      | serviceType     |     Supported searchQuery                 |
-    | :--------------: | ------------:   |  ------------------------------:          |   
-    |  naukri          |   search        |    jobKeyword, jobLocation, jobExperience |
-    |  naukri          |   scrape        |    jobKeyword, jobLocation, jobExperience, sortBy, maxJobs, startPage |
-    |  linkedin        |   search        |    jobKeyword, jobLocation, jobExperience |
-    |  linkedin        |   scrape        |    jobKeyword, jobLocation, jobExperience, maxJobs, startPage |
-    |  indeed          |   search        |    jobKeyword, jobLocation|
-    |  indeed          |   scrape        |    jobKeyword, jobLocation, maxJobs, startPage |
-
-
-### outputConfig 
-
-    | Options              | Type   | Values          |
-    | -------------------- | ------ | --------------- |
-    | fileName (required)  | string | custom          |
-    | fileType (required)  | string | json, xlsx, csv |
-    | folderPath (optional)| string | custom          |
+```
 
 2. Run the scraper: `npm start`
 
@@ -82,6 +74,34 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
 }
 ```
 
+## Options
+
+### jobConfig
+
+    | Options          |      Type       |                Values                       |
+    | :--------------: | ------------:   |  ------------------------------:            |    
+    |  serviceName     |   string        |    naukri, linkedin, indeed, all	           |
+    |  serviceType     |   string        |    search, scrape                           |
+    |  searchQuery     |   object        |    Search query options are given below     |
+
+#### SearchQuery options
+
+    | serviceName      | serviceType     |     Supported searchQuery                 |
+    | :--------------: | ------------:   |  ------------------------------:          |   
+    |  naukri          |   search        |    jobKeyword, jobLocation, jobExperience |
+    |  naukri          |   scrape        |    jobKeyword, jobLocation, jobExperience, sortBy, maxJobs, startPage |
+    |  linkedin        |   search        |    jobKeyword, jobLocation, jobExperience |
+    |  linkedin        |   scrape        |    jobKeyword, jobLocation, jobExperience, maxJobs, startPage |
+    |  indeed          |   search        |    jobKeyword, jobLocation|
+    |  indeed          |   scrape        |    jobKeyword, jobLocation, maxJobs, startPage |
+
+### outputConfig 
+
+    | Options              | Type   | Values          |
+    | -------------------- | ------ | --------------- |
+    | fileName (required)  | string | custom          |
+    | fileType (required)  | string | json, xlsx, csv |
+    | folderPath (optional)| string | custom          |
 
 ## Configuration
 

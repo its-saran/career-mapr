@@ -15,7 +15,6 @@ const ouputConfig = {
     fileType : "csv",
 }
 
-
 await serviceController(jobConfig, ouputConfig);
 
 
