@@ -57,7 +57,7 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
     |  indeed          |   scrape        |    jobKeyword, jobLocation, maxJobs, startPage |
 
 
-### outputConfig 
+outputConfig 
 
     | Options             | Type   | Values          |
     | ------------------- | ------ | --------------- |
