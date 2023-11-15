@@ -46,6 +46,8 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
     |  serviceType     |   string        |    search, scrape                           |
     |  searchQuery     |   object        |    Search query options are given below     |
 
+    SearchQuery options
+
 
     | serviceName      | serviceType     |     Supported searchQuery                 |
     | :--------------: | ------------:   |  ------------------------------:          |   
@@ -57,12 +59,12 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
     |  indeed          |   scrape        |    jobKeyword, jobLocation, maxJobs, startPage |
 
 
-outputConfig 
+### outputConfig 
 
-    | Options             | Type   | Values          |
-    | ------------------- | ------ | --------------- |
-    | fileName (required) | string | custom          |
-    | fileType (required) | string | json, xlsx, csv |
+    | Options              | Type   | Values          |
+    | -------------------- | ------ | --------------- |
+    | fileName (required)  | string | custom          |
+    | fileType (required)  | string | json, xlsx, csv |
     | folderPath (optional)| string | custom          |
 
 2. Run the scraper: `npm start`
