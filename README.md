@@ -46,7 +46,7 @@ Career Mapr is a robust job listings scraper crafted with Puppeteer, Cheerio, an
     |  serviceType     |   string        |    search, scrape                           |
     |  searchQuery     |   object        |    Search query options are given below     |
 
-    SearchQuery options
+#### SearchQuery options
 
 
     | serviceName      | serviceType     |     Supported searchQuery                 |
