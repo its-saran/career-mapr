@@ -5,7 +5,7 @@ import utils from '../utils/helper.js'
 
 
 class Search {
-    constructor(searchQuery, config) {
+    constructor(searchQuery, config, serviceName, serviceType) {
         if (!searchQuery || !config) {
             throw new Error("searchQuery and config parameters are required.");
         }
@@ -32,11 +32,13 @@ class Search {
         // Encode and assign the encoded lowercase job keyword and location from the search query
         this.jobKeyword = searchQuery.jobKeyword && encodeURIComponent(searchQuery.jobKeyword.toLowerCase());
         this.jobLocation = searchQuery.jobLocation && encodeURIComponent(searchQuery.jobLocation.toLowerCase());
+
+        this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
     }
 
     async initialize() {
         try {
-            console.log(`Initializing search engine`);
+            // this.logMessage(`Initializing search engine`);
 
             // Configure axios with proxy if available
             if (this.proxy) {
@@ -50,13 +52,13 @@ class Search {
 
     async checkProxy() {
         try {
-            console.log(`Checking proxy..`)
+            this.logMessage(`Checking proxy..`)
             const proxyCheckUrl = 'https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data';
 
             // Get IP information from NORD VPN - IP locator
             const proxyCheckResponse = await axios.get(proxyCheckUrl, this.axiosConfig);
             this.proxyInfo = proxyCheckResponse.data
-            console.log(`Proxy working properly`)
+            this.logMessage(`Proxy working properly`)
         } catch (error) {
             throw error
         }
@@ -64,7 +66,7 @@ class Search {
 
     async search() {
         try {
-            console.log(`Started searching on ${this.platform}`)
+            // this.logMessage(`Started searching on ${this.platform}`)
             let url = `https://in.linkedin.com/jobs/search?position=1&pageNum=1`
 
             // Append job keyword and/or location to the URL if provided
@@ -75,7 +77,7 @@ class Search {
             } else if (!this.jobLocation && this.jobKeyword) {
                 url = url + `&keywords=${this.jobKeyword}`
             }
-            console.log(url)
+            // this.logMessage(url)
 
             // Send a request to the LinkedIn job search URL
             const response = await axios.get(url, this.axiosConfig);
@@ -94,7 +96,7 @@ class Search {
 
     async start() {
         try {
-            console.log(`Starting search`);
+            this.logMessage(`Starting search...`);
 
             // Initialize the search engine
             await this.initialize();
@@ -106,6 +108,8 @@ class Search {
 
             // Perform the search
             await this.search();
+            this.logMessage(`Search finished!`);
+            this.logMessage(`Total jobs: ${this.totalJobs}`);
         } catch (error) {
             throw error
         }

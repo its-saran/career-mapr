@@ -5,7 +5,7 @@ import utils from '../utils/helper.js'
 
 
 class Scrape {
-    constructor(searchQuery, config) {
+    constructor(searchQuery, config, serviceName, serviceType) {
         if (!searchQuery || !config) {
             throw new Error("searchQuery and config parameters are required.");
         }
@@ -36,11 +36,13 @@ class Scrape {
         this.jobLocation = searchQuery.jobLocation;
         if (searchQuery.maxJobs) this.maxJobs = searchQuery.maxJobs;
         if (searchQuery.startPage) this.startPage = searchQuery.startPage;
+
+        this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
     }
 
     async initialize() {
         try {
-            console.log(`Initializing scraper`);
+            // this.logMessage(`Initializing scraper`);
             puppeteer.use(stealth());
             this.browser = await puppeteer.launch(this.launchOptions);
             this.page = await this.browser.newPage();
@@ -53,11 +55,11 @@ class Scrape {
 
     async connectProxy() {
         try {
-            console.log('Connecting proxy....')
+            this.logMessage('Connecting proxy....')
             await this.page.authenticate({ username: this.config.proxy.username, password: this.config.proxy.password });
-            console.log('Proxy connected')
+            this.logMessage('Proxy connected')
 
-            console.log('Checking ip location')
+            this.logMessage('Checking ip location')
             const ip_check_url = 'https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data';
             await this.page.goto(ip_check_url);
 
@@ -70,6 +72,9 @@ class Scrape {
                 return null;
             });
             this.proxyInfo = ip_data
+
+            // console.log(proxyInfo)
+            this.logMessage(`Proxy working properly`)
         } catch (error) {
             console.error(error);
         }
@@ -78,7 +83,7 @@ class Scrape {
     async scrape() {
         try {
             const platform = this.platform
-            console.log(`\nLoading ${platform}`)
+            // this.logMessage(`Started scraping ${platform}`)
             let url = `https://in.indeed.com/jobs?`
 
             if (this.jobLocation && this.jobKeyword) {
@@ -97,14 +102,14 @@ class Scrape {
                 }
 
                 await this.page.goto(url);
-                console.log(`Visiting url: ${url}`)
+                // this.logMessage(`Visiting url: ${url}`)
                 await this.page.waitForSelector('#mosaic-jobResults')
                 await this.page.waitForSelector('.jobsearch-JobCountAndSortPane-jobCount')
                 this.totalJobs = await this.page.$eval('.jobsearch-JobCountAndSortPane-jobCount', el => el.textContent.replace(/\D/g, ''))
                 
-                if (i===1) console.log(`Expected jobs : ${this.totalJobs}`)
+                if (i===1) this.logMessage(`Expected jobs : ${this.totalJobs}`)
 
-                console.log(`Page No: ${pageNo}, ${url}`)
+                this.logMessage(`Page No: ${pageNo}, ${url}`)
                 await this.page.waitForSelector('.jobTitle', { timeout: 60000 });
 
                 const closeButton = await this.page.$('.icl-CloseButton');
@@ -172,7 +177,7 @@ class Scrape {
                             const salaryRegex = /₹([\d,]+)\s*-\s*₹([\d,]+)/;
                             const matches = salaryString1.match(salaryRegex);
                             if (!matches) {
-                                console.log('Invalid input format');
+                                this.logMessage('Invalid input format');
                             }
                             const salaryMin = parseInt(matches[1].replace(/,/g, ''));
                             const salaryMax = parseInt(matches[2].replace(/,/g, ''));
@@ -279,11 +284,11 @@ class Scrape {
                         platform, jobId, title, company, location, ratings,
                         reviews, salary, qualifications, benefits, type,
                         status, vaccancies, responseRate, reviewed,
-                        posted, jobUrl, companyUrl, description, jobQuery
+                        posted, jobUrl, companyUrl, description
                     }
 
                     this.jobs = [...this.jobs, jobItem];
-                    console.log(`Job No: ${this.jobs.length}`)
+                    this.logMessage(`Job No: ${this.jobs.length}`)
 
                     if (this.jobs.length == this.maxJobs) break;
                 }
@@ -298,7 +303,7 @@ class Scrape {
 
     async start() {
         try {
-            console.log(`\nStarting scraper`);
+            this.logMessage(`Starting scraper...`);
 
             await this.initialize();
             if (this.config.proxyStatus) {
@@ -314,7 +319,7 @@ class Scrape {
     async stop() {
         try {
             await this.browser.close();
-            console.log(`Scraper closed`);
+            this.logMessage(`Scraping completed!`);
         } catch (error) {
             console.error(error);
         }

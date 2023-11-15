@@ -21,13 +21,14 @@ class Controller {
             startSearch: null,
             startScrape: null,
         }
+        this.logMessage = (message) => utils.logMessage(this.serviceName, this.serviceType, message);
 
     }
     async checkQueries() {
         if(this.searchQuery.jobKeyword || this.searchQuery.jobLocation) {
             this.controllerStatus.checkQueries = true
         } else {
-            console.log(`Error: Insufficient parameters`);
+            this.logMessage(`Error: Insufficient parameters`)
         }
     }
     async checkConfig() {
@@ -36,20 +37,20 @@ class Controller {
                 this.controllerStatus.checkConfig = true
             }
         } else {
-            console.log(`Error: Configuration not found`);
+            this.logMessage(`Error: Configuration not found`);
         }
     }
     async getProxyInfo() {
         if (this.controllerStatus.checkConfig) {
             if (config.proxyStatus) {
                 config.proxy = proxy
-                console.log("Proxy Enabled")
+                this.logMessage("Proxy Enabled")
             } else {
-                console.log("Proxy not enabled")
+                this.logMessage("Proxy not enabled")
             }
             this.controllerStatus.getProxyInfo = true
         } else {
-            console.log(`Error: Unable to get proxy info`);
+            this.logMessage(`Error: Unable to get proxy info`);
         }
     }
     async startSearch() {
@@ -64,11 +65,10 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
-                    this.search = new naukriSearch(filteredQueries, this.config);
+                    this.search = new naukriSearch(filteredQueries, this.config, this.serviceName, this.serviceType);
                     await this.search.start();
-                    console.log(this.search.totalJobs)
 
                 } else if (this.serviceName === 'linkedin') {
 
@@ -79,11 +79,10 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
-                    this.search = new linkedinSearch(filteredQueries, this.config);
+                    this.search = new linkedinSearch(filteredQueries, this.config, this.serviceName, this.serviceType);
                     await this.search.start();
-                    console.log(this.search.totalJobs)
 
                 } else if (this.serviceName === 'indeed') {
 
@@ -93,12 +92,12 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
-                    this.search = new indeedSearch(filteredQueries, this.config);
+                    this.search = new indeedSearch(filteredQueries, this.config, this.serviceName, this.serviceType);
                     await this.search.start();
                     await this.search.stop();
-                    console.log(this.search.totalJobs)
+                    this.logMessage(this.search.totalJobs)
 
                 } else if (this.serviceName === 'all') {
 
@@ -108,14 +107,14 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
 
-                    this.naukriSearch =  new naukriSearch(filteredQueries, this.config);
+                    this.naukriSearch =  new naukriSearch(filteredQueries, this.config, 'naukri', this.serviceType);
                     await this.naukriSearch.start();
-                    this.linkedinSearch =  new linkedinSearch(filteredQueries, this.config);
+                    this.linkedinSearch =  new linkedinSearch(filteredQueries, this.config, 'linkedin', this.serviceType);
                     await this.linkedinSearch.start();
-                    this.indeedSearch =  new indeedSearch(filteredQueries, this.config);
+                    this.indeedSearch =  new indeedSearch(filteredQueries, this.config, 'indeed', this.serviceType);
                     await this.indeedSearch.start();
                     await this.indeedSearch.stop();
 
@@ -124,7 +123,7 @@ class Controller {
                         Linkedin: `${this.linkedinSearch.totalJobs}`,
                         Indeed: `${this.indeedSearch.totalJobs}`
                     }
-                    console.log(this.totalJobs)
+                    this.logMessage(utils.objectToString(this.totalJobs))
                 }
                 
                 this.controllerStatus.startSearch = true
@@ -149,9 +148,9 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
-                    this.scrape = new naukriScrape(filteredQueries, this.config);
+                    this.scrape = new naukriScrape(filteredQueries, this.config, this.serviceName, this.serviceType);
                     await this.scrape.start();
 
                     this.jobs = this.scrape.jobs
@@ -167,9 +166,9 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
-                    this.scrape = new linkedinScrape(filteredQueries, config);
+                    this.scrape = new linkedinScrape(filteredQueries, this.config, this.serviceName, this.serviceType);
                     await this.scrape.start();
                     await this.scrape.stop();
 
@@ -185,9 +184,9 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
-                    this.scrape = new indeedScrape(filteredQueries, this.config);
+                    this.scrape = new indeedScrape(filteredQueries, this.config, this.serviceName, this.serviceType);
                     await this.scrape.start();
                     await this.scrape.stop();
 
@@ -202,21 +201,20 @@ class Controller {
                     }
 
                     const filteredQueries = utils.filterObject(supportedQueries)
-                    console.log(filteredQueries);
+                    this.logMessage(utils.objectToString(filteredQueries));
 
-                    this.naukriScrape =  new naukriScrape(filteredQueries, this.config);
+                    this.naukriScrape =  new naukriScrape(filteredQueries, this.config, 'naurki', this.serviceType);
                     await this.naukriScrape.start();
-                    this.linkedinScrape =  new linkedinScrape(filteredQueries, this.config);
+                    this.linkedinScrape =  new linkedinScrape(filteredQueries, this.config, 'linkedin', this.serviceType);
                     await this.linkedinScrape.start();
                     await this.linkedinScrape.stop();
-                    this.indeedScrape =  new indeedScrape(filteredQueries, this.config);
+                    this.indeedScrape =  new indeedScrape(filteredQueries, this.config, 'indeed', this.serviceType);
                     await this.indeedScrape.start();
                     await this.indeedScrape.stop();
 
                     this.jobs = [ ...this.naukriScrape.jobs, ...this.linkedinScrape.jobs, ...this.indeedScrape.jobs,]
                 }
     
-                console.log(`Scraping Finished`);
                 this.controllerStatus.startScrape = true
             } catch (error) {
                 throw error;
@@ -237,6 +235,8 @@ class Controller {
 
 export const serviceController = async (jobConfig, outputConfig) => {
 
+    const timeLog = (message) => utils.timeLog(message)
+
     let serviceNames = ['naukri', 'linkedin', 'indeed', 'all']
     let serviceTypes = ['search', 'scrape']
 
@@ -244,13 +244,14 @@ export const serviceController = async (jobConfig, outputConfig) => {
     const serviceName = jobConfig.serviceName.toLowerCase();
     const serviceType = jobConfig.serviceType.toLowerCase();
 
+
     if (!serviceNames.includes(serviceName)) {
-        console.log('Invalid Service name')
+        timeLog('Invalid Service name')
         return null;
     }
 
     if (!serviceTypes.includes(serviceType)) {
-        console.log('Invalid Service type')
+        timeLog('Invalid Service type')
         return null;
     }
 

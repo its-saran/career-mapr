@@ -3,7 +3,7 @@ import tunnel from 'tunnel';
 import utils from '../utils/helper.js';
 
 class Scrape {
-    constructor(searchQuery, config) {
+    constructor(searchQuery, config, serviceName, serviceType) {
         if (!searchQuery || !config) {
             throw new Error("searchQuery and config parameters are required.");
         }
@@ -40,10 +40,12 @@ class Scrape {
         this.maxJobs = maxJobs || this.config.maxJobs;
         this.startPage = startPage || this.config.startPage;
 
+        this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
+
     }
     async initialize() {
         try {
-            console.log(`Initializing Scraper`);
+            // this.logMessage(`Initializing scraper`);
 
             // Configure axios with proxy if available
             if (this.proxy) {
@@ -56,26 +58,27 @@ class Scrape {
     }
     async checkProxy() {
         try {
-            console.log(`Checking proxy..`)
+            this.logMessage(`Checking proxy..`)
             const proxyCheckUrl = 'https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data';
 
             // Get IP information from NORD VPN - IP locator
             const proxyCheckResponse = await axios.get(proxyCheckUrl, this.axiosConfig);
             this.proxyInfo = proxyCheckResponse.data
-            console.log(this.proxyInfo)
-            console.log(`Proxy working properly`)
+            // console.log(this.proxyInfo)
+            this.logMessage(`Proxy working properly`)
         } catch (error) {
             throw error
         }
     }
     async scrape() {
         try {
+            const platform = this.platform
+            // this.logMessage(`Started scraping ${platform}`)
 
             let totalJobs = 100// 100 is a placeholder
             let pageNo = this.startPage
             let jobData = []
 
-            console.log(`Loading ${this.platform}`)
             for(let i = 0; i <= totalJobs && jobData.length < this.maxJobs; i += this.noOfResults) {
                 if (jobData.length === totalJobs) break;
       
@@ -95,6 +98,8 @@ class Scrape {
                 const data = response.data
                 totalJobs = data.noOfJobs
                 this.totalJobs = totalJobs
+
+                this.logMessage(`Expected jobs: ${this.totalJobs}`)
                 
                 const jobDetials = data.jobDetails
                 jobDetials.map(job => {
@@ -152,29 +157,27 @@ class Scrape {
                 jobData.push(jobObject);
                 })
       
-                console.log(`Page no: ${pageNo}`)
+                this.logMessage(`Page no: ${pageNo}`)
                 pageNo++
                 await utils.waitFor(this.delay)
-                console.log(`${jobData.length}/${totalJobs} Data extracted`)
+                this.logMessage(`${jobData.length}/${totalJobs} Data extracted`)
 
                 const endTime =  Date.now();
                 const elapsedTime = endTime - this.startTime
 
                 // If the elapsed time exceeds one minute, break out of the loop
                 if (elapsedTime >= this.maxTime) {
-                    console.log(`${elapsedTime/1000} seconds reached`)
+                    this.logMessage(`${elapsedTime/1000} seconds reached`)
                     break;
                 }
             }
     
             if (jobData.length <= this.maxJobs ) {
-                console.log(`Total jobs scraped: ${jobData.length}`)
-                console.log(`Scraping ${this.platform} completed!`)
+                // this.logMessage(`Total jobs scraped: ${jobData.length}`)
                 this.jobs = jobData
             } else {
                 const newJobData = jobData.slice(0, this.maxJobs)
-                console.log(`Total jobs scraped: ${newJobData.length}`)
-                console.log(`Scraping ${this.platform} completed!`)
+                // this.logMessage(`Total jobs scraped: ${newJobData.length}`)
                 this.jobs = newJobData
             }
         } catch(error) {
@@ -183,7 +186,7 @@ class Scrape {
     }
     async start() {
         try {
-            console.log(`Starting scraper`);
+            this.logMessage(`Starting scraper...`);
 
             // Initialize the search engine
             await this.initialize();
@@ -193,6 +196,7 @@ class Scrape {
                 await this.checkProxy();
             }
             await this.scrape();
+            this.logMessage(`Scraping completed!`)
         } catch (error) {
             throw error
         }

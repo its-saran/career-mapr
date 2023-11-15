@@ -36,22 +36,19 @@ const utils = {
     timeStamp: () => moment().tz('Asia/Kolkata').toISOString(),
     moment: () => moment(),
     elapseTime : (startTime, endTime) => moment.duration(endTime.diff(startTime)).asSeconds(),
-    logMessage : (serviceName, id, message, consoleObject) => {
-        console.log(`${serviceName} | ${utils.time()} | ${id} | ${message}`)
-        consoleObject[utils.timeMilli()] = `${serviceName} | ${message}`
+    logMessage : (serviceName, serviceType, message) => {
+        serviceName = utils.capitalizeString(serviceName)
+        serviceType = utils.capitalizeString(serviceType)
+        console.log(`${serviceName} | ${serviceType} | ${utils.time()} | ${message}`)
     },
-    errorMessage : (serviceName, id, message, consoleObject) => {
-        console.error(`${serviceName} | ${utils.time()} | ${id} | ${message}`)
-        consoleObject[utils.timeMilli()] = `${serviceName} | ${message}`
-    },
-    reqResMessage: (serviceName, message, consoleObject) => {
-        console.log(`${serviceName} | ${utils.time()} | ${message}`)
-        consoleObject[utils.timeMilli()] = `${serviceName} | ${message}`
+    timeLog : (message) => {
+        console.log(` ${utils.time()} | ${message}`)
     },
     addId : (array, Idkey, Idvalue) => array.map(item => ({...item, [Idkey]: `${Idvalue}`})),
     addUniqueId : (array, Idkey, IdvaluePrefix) => array.map(item => ({...item, [Idkey]: `${IdvaluePrefix}`+`${uuidv4()}`})),
     addObjectInArray : (array, key, value) => array.map(item => ({...item, [key]: value})),
     capitalizeString: (string) => string.charAt(0).toUpperCase() + string.slice(1),
+    objectToString: (obj) => Object.entries(obj).map(([key, value]) => `${key}: ${value}`).join(', '),
     filterObject: (obj) => {
         return Object.fromEntries(
             Object.entries(obj).filter(([key, value]) => value !== null && value !== undefined)
@@ -79,7 +76,7 @@ const utils = {
                 if (err) {
                     console.error('Error writing JSON file:', err);
                 } else {
-                    console.log('JSON file has been saved:', filePath);
+                    console.log(`\nJSON file created successfully!`);
                 }
                 });
             }
@@ -125,7 +122,7 @@ const utils = {
         // Save the workbook to a file
         workbook.xlsx.writeFile(`${folderPath}/${fileName}.xlsx`);
     
-        console.log('Excel file created successfully!');
+        console.log('\nExcel file created successfully!');
     },
     createCSV: (outputConfig, data) => {
         try {
@@ -162,7 +159,7 @@ const utils = {
         
             csvStream.end();
         
-            console.log(`CSV file created successfully at: ${filePath}`);
+            console.log(`\nCSV file created successfully!`);
         } catch (error) {
         console.error('Error creating CSV file:', error);
         }

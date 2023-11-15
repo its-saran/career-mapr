@@ -1,8 +1,9 @@
 import axios from 'axios'
 import tunnel from 'tunnel';
+import utils from "../utils/helper.js";
 
 class Search {
-    constructor(searchQuery, config) {
+    constructor(searchQuery, config, serviceName, serviceType) {
         // Initialize class properties
         this.config = config.naukri
         this.platform = "Naurki"
@@ -25,10 +26,12 @@ class Search {
         this.jobKeyword = searchQuery.jobKeyword && encodeURIComponent(searchQuery.jobKeyword.toLowerCase());
         this.jobLocation = searchQuery.jobLocation && encodeURIComponent(searchQuery.jobLocation.toLowerCase());
         this.jobExperience = searchQuery.jobExperience
+
+        this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
     }
     async initialize() {
         try {
-            console.log(`Initializing search engine`);
+            // this.logMessage(`Initializing search engine`);
 
             // Configure axios with proxy if available
             if (this.proxy) {
@@ -41,21 +44,21 @@ class Search {
     }
     async checkProxy() {
         try {
-            console.log(`Checking proxy..`)
+            this.logMessage(`Checking proxy..`)
             const proxyCheckUrl = 'https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data';
 
             // Get IP information from NORD VPN - IP locator
             const proxyCheckResponse = await axios.get(proxyCheckUrl, this.axiosConfig);
             this.proxyInfo = proxyCheckResponse.data
             console.log(this.proxyInfo)
-            console.log(`Proxy working properly`)
+            this.logMessage(`Proxy working properly`)
         } catch (error) {
             throw error
         }
     }
     async search() {
         try {
-            console.log(`Started searching on ${this.platform}`)
+            // this.logMessage(`Started searching on ${this.platform}`)
 
             const pageNo = 1
             let url = `https://www.naukri.com/jobapi/v3/search?searchType=adv&pageNo=${pageNo}`
@@ -67,7 +70,7 @@ class Search {
                 url = url + `&urlType=search_by_keyword&keyword=${this.jobKeyword}`
             }
             this.jobExperience !== undefined && (url += `&experience=${this.jobExperience}`);
-            console.log(url)
+            // this.logMessage(url)
 
             // Send a request to the Naukri job search URL
             const response = await axios.get(url, this.axiosConfig);
@@ -79,7 +82,7 @@ class Search {
     }
     async start() {
         try {
-            console.log(`Starting search`);
+            this.logMessage(`Starting search...`);
             
             // Initialize the search engine
             await this.initialize();
@@ -90,6 +93,8 @@ class Search {
 
             // Perform the search
             await this.search();
+            this.logMessage(`Search finished!`);
+            this.logMessage(`Total jobs: ${this.totalJobs}`);
         } catch (error) {
             throw error
         }

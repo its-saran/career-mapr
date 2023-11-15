@@ -5,7 +5,7 @@ import utils from '../utils/helper.js'
 
 
 class Scrape {
-    constructor(searchQuery, config) {
+    constructor(searchQuery, config, serviceName, serviceType) {
         if (!searchQuery || !config) {
             throw new Error("searchQuery and config parameters are required.");
         }
@@ -48,11 +48,13 @@ class Scrape {
         // Override maxJobs and startPage if provided in the searchQuery
         if (maxJobs) this.maxJobs = maxJobs;
         if (startPage) this.startPage = startPage;
+
+        this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
     }
 
     async initialize() {
         try {
-            console.log(`Initializing scraper`);
+            // this.logMessage(`Initializing scraper`);
 
             // Initialize browser
             puppeteer.use(stealth());
@@ -67,7 +69,7 @@ class Scrape {
 
     async checkProxy() {
         try {
-            console.log('Checking proxy....')
+            this.logMessage('Checking proxy....')
             // Authenticate proxy
             await this.page.authenticate({ username: this.proxy.username, password: this.proxy.password });
             // Get IP information from NORD VPN - IP locator
@@ -83,7 +85,8 @@ class Scrape {
                 return null;
             });
             this.proxyInfo = proxyInfo
-            console.log(`Proxy working properly`)
+            // console.log(proxyInfo)
+            this.logMessage(`Proxy working properly`)
         } catch (error) {
             throw error
         }
@@ -91,8 +94,8 @@ class Scrape {
 
     async scrape() {
         try {
-
-            console.log(`Loading ${this.platform}`)
+            const platform = this.platform
+            // this.logMessage(`Started scraping ${platform}`)
             let url = `https://in.linkedin.com/jobs/search?position=1&pageNum=1`
             
             // Append job keyword and/or location to the URL if provided
@@ -105,10 +108,9 @@ class Scrape {
             }
 
             await this.page.goto(url);
-
             await this.page.waitForSelector('.jobs-search__results-list', {timeout: 60000});
             this.totalJobs = await this.page.$eval('.results-context-header__job-count', el => el.textContent.trim())
-            console.log(`Total jobs: ${this.totalJobs}`)
+            this.logMessage(`Expected jobs: ${this.totalJobs}`)
     
             const viewedAll = '.see-more-jobs__viewed-all.hidden'
             const loadMore = 'button.infinite-scroller__show-more-button--visible'
@@ -119,7 +121,7 @@ class Scrape {
     
             while (selectorFound) {
                 if (extractedItems >= this.maxJobs) {
-                    console.log('Max jobs listed')
+                    this.logMessage('Max jobs listed')
                     break;
                 }
         
@@ -138,17 +140,17 @@ class Scrape {
         
                         const jobItems = await this.page.$$('.job-search-card')
                         extractedItems = jobItems.length
-                        console.log(`Page No: ${pageNo}, total: ${extractedItems} jobs found`)
+                        this.logMessage(`Page No: ${pageNo}, total: ${extractedItems} jobs found`)
         
                     } catch (error) {
                         pageNo++
                         const jobItems = await this.page.$$('.job-search-card')
                         extractedItems = jobItems.length
-                        this.errorMessage(`Page No: ${pageNo}, total: ${extractedItems} jobs found`)
+                        this.logMessage(`Page No: ${pageNo}, total: ${extractedItems} jobs found`)
         
                     }
                 } catch (error) {
-                    console.log('You\'ve loaded all jobs for this search');
+                    // this.logMessage('Loaded all jobs for this search');
                     selectorFound = false;
                 }
             }
@@ -159,7 +161,7 @@ class Scrape {
     
             for (const job of jobItems) {
                 if (i >= this.maxJobs) {
-                    console.log('Max jobs extracted')
+                    this.logMessage('Max jobs extracted')
                     break; 
                 }
                 await job.click();
@@ -252,10 +254,9 @@ class Scrape {
     
                 this.jobs = [...this.jobs, jobItem];
                 i++
-                console.log(`Job No: ${i}`)
+                this.logMessage(`Job No: ${i}`)
     
             }
-            console.log(`Scraping ${this.platform} completed!`)
         } catch (error) {
             throw error
         }
@@ -263,8 +264,8 @@ class Scrape {
 
     async start() {
         try {
-            console.log(`Starting scraper`);
-
+            this.logMessage(`Starting scraper...`);
+            
             await this.initialize();
             if (this.config.proxyStatus) {
                 await this.checkProxy();
@@ -279,7 +280,7 @@ class Scrape {
     async stop() {
         try {
             await this.browser.close();
-            console.log('Scraper closed');
+            this.logMessage(`Scraping completed!`)
         } catch (error) {
             throw error
         }

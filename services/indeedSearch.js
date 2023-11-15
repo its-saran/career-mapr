@@ -1,10 +1,11 @@
 import puppeteer from 'puppeteer-extra';
 import stealth from 'puppeteer-extra-plugin-stealth';
 import path from 'path';
+import utils from "../utils/helper.js";
 
 
 class Search {
-    constructor(searchQuery, config) {
+    constructor(searchQuery, config, serviceName, serviceType) {
         if (!searchQuery || !config) {
             throw new Error("searchQuery and config parameters are required.");
         }
@@ -27,11 +28,13 @@ class Search {
         this.totalJobs = null;
         this.jobKeyword = searchQuery.jobKeyword;
         this.jobLocation = searchQuery.jobLocation;
+
+        this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
     }
 
     async initialize() {
         try {
-            console.log(`Initializing search engine`);
+            // this.logMessage(`Initializing search engine`);
             puppeteer.use(stealth());
             this.browser = await puppeteer.launch(this.launchOptions);
             this.page = await this.browser.newPage();
@@ -44,11 +47,11 @@ class Search {
 
     async connectProxy() {
         try {
-            console.log('Connecting proxy....')
+            this.logMessage('Connecting proxy....')
             await this.page.authenticate({ username: this.config.proxy.username, password: this.config.proxy.password });
-            console.log('Proxy connected')
+            this.logMessage('Proxy connected')
 
-            console.log('Checking ip location')
+            this.logMessage('Checking ip location')
             const ip_check_url = 'https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data';
             await this.page.goto(ip_check_url);
 
@@ -70,7 +73,7 @@ class Search {
 
         try {
             const platform = this.platform
-            console.log(`Loading ${platform}`)
+            // this.logMessage(`Started searching on ${platform}`)
             let url = `https://in.indeed.com/jobs?`
 
             if (this.jobLocation && this.jobKeyword) {
@@ -91,7 +94,7 @@ class Search {
 
     async start() {
         try {
-            console.log(`\nStarting search`);
+            this.logMessage(`Starting search...`);
 
             await this.initialize();
             if (this.config.proxyStatus) {
@@ -107,7 +110,8 @@ class Search {
     async stop() {
         try {
             await this.browser.close();
-            console.log(`Search engine closed`);
+            this.logMessage(`Search finished!`);
+            this.logMessage(`Total jobs: ${this.totalJobs}`);
         } catch (error) {
             console.error(error);
         }

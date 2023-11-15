@@ -4,16 +4,16 @@ const jobConfig = {
     searchQuery: {
         jobKeyword: "Python", 
         jobLocation: "chennai",
-        jobExperience: 1,
         maxJobs: 5
     },
-    serviceName : "naukri",
+    serviceName : "all",
     serviceType : "scrape",
 }
 const ouputConfig = {
     fileName : "jobs",
-    fileType : "csv",
+    fileType : "xlsx",
 }
+
 
 await serviceController(jobConfig, ouputConfig);
 
