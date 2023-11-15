@@ -21,11 +21,11 @@ class Controller {
             startSearch: null,
             startScrape: null,
         }
+
     }
     async checkQueries() {
         if(this.searchQuery.jobKeyword || this.searchQuery.jobLocation) {
             this.controllerStatus.checkQueries = true
-            console.log(this.searchQuery);
         } else {
             console.log(`Error: Insufficient parameters`);
         }
@@ -57,22 +57,76 @@ class Controller {
             try {
 
                 if (this.serviceName === 'naukri') {
-                    console.log(`Searching Naukri...`);
-                    this.search = new naukriSearch(this.searchQuery, this.config);
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                        jobExperience: this.searchQuery.jobExperience
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+                    this.search = new naukriSearch(filteredQueries, this.config);
                     await this.search.start();
+                    console.log(this.search.totalJobs)
+
                 } else if (this.serviceName === 'linkedin') {
-                    console.log(`Searching Linkedin...`);  
-                    this.search = new linkedinSearch(this.searchQuery, this.config);
+
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                        jobExperience: this.searchQuery.jobExperience
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+                    this.search = new linkedinSearch(filteredQueries, this.config);
                     await this.search.start();
+                    console.log(this.search.totalJobs)
+
                 } else if (this.serviceName === 'indeed') {
-                    console.log(`Searching Indeed...`);
-                    this.search = new indeedSearch(this.searchQuery, this.config);
+
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+                    this.search = new indeedSearch(filteredQueries, this.config);
                     await this.search.start();
                     await this.search.stop();
+                    console.log(this.search.totalJobs)
+
+                } else if (this.serviceName === 'all') {
+
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+
+                    this.naukriSearch =  new naukriSearch(filteredQueries, this.config);
+                    await this.naukriSearch.start();
+                    this.linkedinSearch =  new linkedinSearch(filteredQueries, this.config);
+                    await this.linkedinSearch.start();
+                    this.indeedSearch =  new indeedSearch(filteredQueries, this.config);
+                    await this.indeedSearch.start();
+                    await this.indeedSearch.stop();
+
+                    this.totalJobs = {
+                        Naukri: `${this.naukriSearch.totalJobs}`,
+                        Linkedin: `${this.linkedinSearch.totalJobs}`,
+                        Indeed: `${this.indeedSearch.totalJobs}`
+                    }
+                    console.log(this.totalJobs)
                 }
                 
-                console.log(`Search Finished`);
-                console.log(`Total jobs: ${this.search.totalJobs}`);
                 this.controllerStatus.startSearch = true
             } catch (error) {
                 console.log(error)
@@ -84,19 +138,82 @@ class Controller {
             try {
 
                 if (this.serviceName === 'naukri') {
-                    console.log(`Scraping Naukri...`);
-                    this.scrape = new naukriScrape(this.searchQuery, this.config);
+
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                        jobExperience: this.searchQuery.jobExperience,
+                        sortBy: this.searchQuery.sortBy,
+                        maxJobs: this.searchQuery.maxJobs,
+                        startPage: this.searchQuery.startPage
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+                    this.scrape = new naukriScrape(filteredQueries, this.config);
                     await this.scrape.start();
-                } else if (this.serviceName === 'linkedin') {
-                    console.log(`Scraping Linkedin...`);  
-                    this.scrape = new linkedinScrape(this.searchQuery, config);
+
+                    this.jobs = this.scrape.jobs
+
+                } else if (this.serviceName === 'linkedin') { 
+
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                        jobExperience: this.searchQuery.jobExperience,
+                        maxJobs: this.searchQuery.maxJobs,
+                        startPage: this.searchQuery.startPage
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+                    this.scrape = new linkedinScrape(filteredQueries, config);
                     await this.scrape.start();
                     await this.scrape.stop();
+
+                    this.jobs = this.scrape.jobs
+
                 } else if (this.serviceName === 'indeed') {
-                    console.log(`Scraping Indeed...`);
-                    this.scrape = new indeedScrape(this.searchQuery, this.config);
+
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                        maxJobs: this.searchQuery.maxJobs,
+                        startPage: this.searchQuery.startPage
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+                    this.scrape = new indeedScrape(filteredQueries, this.config);
                     await this.scrape.start();
                     await this.scrape.stop();
+
+                    this.jobs = this.scrape.jobs
+
+                } else if (this.serviceName === 'all') {
+
+                    const supportedQueries = {
+                        jobKeyword: this.searchQuery.jobKeyword,
+                        jobLocation: this.searchQuery.jobLocation,
+                        maxJobs: this.searchQuery.maxJobs,
+                    }
+
+                    const filteredQueries = utils.filterObject(supportedQueries)
+                    console.log(filteredQueries);
+
+                    this.naukriScrape =  new naukriScrape(filteredQueries, this.config);
+                    await this.naukriScrape.start();
+                    this.linkedinScrape =  new linkedinScrape(filteredQueries, this.config);
+                    await this.linkedinScrape.start();
+                    await this.linkedinScrape.stop();
+                    this.indeedScrape =  new indeedScrape(filteredQueries, this.config);
+                    await this.indeedScrape.start();
+                    await this.indeedScrape.stop();
+
+                    this.jobs = [ ...this.naukriScrape.jobs, ...this.linkedinScrape.jobs, ...this.indeedScrape.jobs,]
                 }
     
                 console.log(`Scraping Finished`);
@@ -106,23 +223,26 @@ class Controller {
             }
         }
     }
-    async writeFile(JSObject, folderPath, fileName, fileType) {
-        if (fileType === '.json') {
-            fileName = fileName+fileType
-            utils.createJSON(JSObject, folderPath, fileName)
-        } else {
-            console.log('Therewas an error writing file')
+    async writeFile(ouputConfig, data) {
+        const fileType = ouputConfig.fileType
+        if (fileType === 'json') {
+            utils.createJSON(ouputConfig, data)
+        } else if (fileType === 'xlsx') {
+            utils.createXLSX(ouputConfig, data)
+        } else if (fileType === 'csv') {
+            utils.createCSV(ouputConfig, data)
         }
     }
 }
 
-export const serviceController = async (searchQuery, serviceName, serviceType, folderPath, fileName, fileType) => {
+export const serviceController = async (jobConfig, outputConfig) => {
 
-    let serviceNames = ['naukri', 'linkedin', 'indeed']
+    let serviceNames = ['naukri', 'linkedin', 'indeed', 'all']
     let serviceTypes = ['search', 'scrape']
 
-    serviceName = serviceName.toLowerCase();
-    serviceType = serviceType.toLowerCase();
+    const searchQuery = jobConfig.searchQuery
+    const serviceName = jobConfig.serviceName.toLowerCase();
+    const serviceType = jobConfig.serviceType.toLowerCase();
 
     if (!serviceNames.includes(serviceName)) {
         console.log('Invalid Service name')
@@ -141,10 +261,9 @@ export const serviceController = async (searchQuery, serviceName, serviceType, f
         await controller.getProxyInfo()
         if (serviceType === "search") {
             await controller.startSearch();
-            console.log(controller.search.totalJobs)
         } else {
             await controller.startScrape();
-            await controller.writeFile(controller.scrape.jobs, folderPath, fileName, fileType)
+            await controller.writeFile(outputConfig, controller.jobs)
         }
 
     } catch (error) {

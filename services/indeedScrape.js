@@ -125,13 +125,6 @@ class Scrape {
                     const jobId = urlObject.searchParams.get("jk") || '';
                     const company = await job.$eval('[data-testid="company-name"]', el => el.textContent.trim());
                     const location = await job.$eval('[data-testid="text-location"]', el => el.textContent.trim());
-                    const jobQuery = {
-                        jobKeyword: this.jobKeyword,
-                        jobLocation: this.jobLocation,
-                        totalJobs: this.totalJobs,
-                        jobNo: `${this.jobs.length}/${this.maxJobs}`,
-                        pageNo: pageNo
-                    }
 
                     let ratings
                     let reviews

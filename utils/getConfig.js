@@ -1,4 +1,3 @@
-// import { firestoreDb } from '../utils/firebase.js';
 import config from '../../config/config.json' assert { type: "json" };
 
 const getConfig = async () => {

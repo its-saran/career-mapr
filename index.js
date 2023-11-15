@@ -1,17 +1,24 @@
 import { serviceController } from './controllers/serviceController.js';
 
-const searchQuery = {
-    jobKeyword: "Python", 
-    jobLocation: "chennai",
-    maxJobs: 50
+const jobConfig = {
+    searchQuery: {
+        jobKeyword: "Python", 
+        jobLocation: "chennai",
+        jobExperience: 1,
+        maxJobs: 5
+    },
+    serviceName : "naukri",
+    serviceType : "scrape",
 }
-const serviceName = "naukri"
-const serviceType = "scrape"
-const folderPath = "./outputs"
-const fileName = "jobs"
-const fileType = ".json"
+const ouputConfig = {
+    fileName : "jobs",
+    fileType : "csv",
+}
 
-await serviceController(searchQuery, serviceName, serviceType, folderPath, fileName, fileType);
+
+await serviceController(jobConfig, ouputConfig);
+
+
 
 
 
