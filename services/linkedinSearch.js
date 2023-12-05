@@ -12,6 +12,8 @@ class Search {
 
         // Initialize class properties
         this.config = config.linkedin
+        this.config.proxyStatus = config.proxyStatus
+        this.config.proxy = config.proxy
         this.platform = 'Linkedin';
         this.proxyInfo = 'Not connected';
         this.totalJobs = null;
@@ -34,6 +36,7 @@ class Search {
         this.jobLocation = searchQuery.jobLocation && encodeURIComponent(searchQuery.jobLocation.toLowerCase());
 
         this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
+        this.continue = true;
     }
 
     async initialize() {
@@ -60,7 +63,8 @@ class Search {
             this.proxyInfo = proxyCheckResponse.data
             this.logMessage(`Proxy working properly`)
         } catch (error) {
-            throw error
+            this.logMessage(`Invalid proxy`);
+            this.continue = false;
         }
     }
 
@@ -106,10 +110,13 @@ class Search {
                 await this.checkProxy();
             }
 
-            // Perform the search
-            await this.search();
-            this.logMessage(`Search finished!`);
-            this.logMessage(`Total jobs: ${this.totalJobs}`);
+            if (this.continue) {
+                // Perform the search
+                await this.search();
+                this.logMessage(`Search finished!`);
+                this.logMessage(`Total jobs: ${this.totalJobs}`);
+            }
+
         } catch (error) {
             throw error
         }

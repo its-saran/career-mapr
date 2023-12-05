@@ -2,7 +2,7 @@ import { serviceController } from './controllers/serviceController.js';
 
 const jobConfig = {
     searchQuery: {
-        jobKeyword: "Python", 
+        jobKeyword: "python", 
         jobLocation: "chennai",
         maxJobs: 5
     },
@@ -11,7 +11,7 @@ const jobConfig = {
 }
 const ouputConfig = {
     fileName : "jobs",
-    fileType : "xlsx",
+    fileType : "json",
 }
 
 

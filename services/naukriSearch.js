@@ -6,6 +6,8 @@ class Search {
     constructor(searchQuery, config, serviceName, serviceType) {
         // Initialize class properties
         this.config = config.naukri
+        this.config.proxyStatus = config.proxyStatus
+        this.config.proxy = config.proxy
         this.platform = "Naurki"
         this.proxyInfo = 'Not connected';
         this.totalJobs = null;
@@ -28,6 +30,7 @@ class Search {
         this.jobExperience = searchQuery.jobExperience
 
         this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
+        this.continue = true;
     }
     async initialize() {
         try {
@@ -50,10 +53,11 @@ class Search {
             // Get IP information from NORD VPN - IP locator
             const proxyCheckResponse = await axios.get(proxyCheckUrl, this.axiosConfig);
             this.proxyInfo = proxyCheckResponse.data
-            console.log(this.proxyInfo)
+            // console.log(this.proxyInfo)
             this.logMessage(`Proxy working properly`)
         } catch (error) {
-            throw error
+            this.logMessage(`Invalid proxy`);
+            this.continue = false;
         }
     }
     async search() {
@@ -91,10 +95,13 @@ class Search {
                 await this.checkProxy();
             }
 
-            // Perform the search
-            await this.search();
-            this.logMessage(`Search finished!`);
-            this.logMessage(`Total jobs: ${this.totalJobs}`);
+            if (this.continue) {
+                // Perform the search
+                await this.search();
+                this.logMessage(`Search finished!`);
+                this.logMessage(`Total jobs: ${this.totalJobs}`);
+            }
+
         } catch (error) {
             throw error
         }

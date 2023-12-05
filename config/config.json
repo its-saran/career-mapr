@@ -1,6 +1,5 @@
 { 
     "naukri": {
-        "proxyStatus": false,
         "headers": {
             "accept": "application/json",
             "accept-encoding": "gzip, deflate, br",
@@ -27,7 +26,6 @@
         "delay": 2000,
         "maxJobs": 970,
         "startPage": 1,
-        "proxyStatus": false,
         "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
         "viewportSize": {
             "height": 631, 
@@ -38,7 +36,6 @@
         "delay": 3000,
         "maxJobs": 10,
         "startPage": 1,
-        "proxyStatus": false,
         "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
         "viewportSize": {
             "height": 631, 
@@ -53,5 +50,8 @@
         }
     },
     "chromePath": "./resources/chrome-win64/chrome.exe",
-    "outputPath": "./Outputs/"
+    "outputPath": "./Outputs/",
+    "headless": "new",
+    "proxyStatus": false,
+    "proxyPath": "./config/proxy.json"
 }

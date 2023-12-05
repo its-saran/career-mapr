@@ -12,8 +12,10 @@ class Scrape {
 
         // Initialize class properties
         this.config = config.linkedin
+        this.config.proxyStatus = config.proxyStatus
+        this.config.proxy = config.proxy
         this.launchOptions = {
-            headless: 'new',
+            headless: config.headless,
             executablePath: path.resolve(config.chromePath),
             args: ['--start-maximized']
         };
@@ -28,7 +30,7 @@ class Scrape {
 
         // Check if proxy configuration is provided and proxy is enabled
         if (this.config.proxy && this.config.proxyStatus) {
-            this.browserLaunchOptions.args.push(`--proxy-server=http://${this.config.proxy.host}:${this.config.proxy.port}`);
+            this.launchOptions.args.push(`--proxy-server=http://${this.config.proxy.host}:${this.config.proxy.port}`);
             this.proxy.username = this.config.proxy.username;
             this.proxy.password = this.config.proxy.password;
         }
@@ -50,6 +52,7 @@ class Scrape {
         if (startPage) this.startPage = startPage;
 
         this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
+        this.continue = true;
     }
 
     async initialize() {
@@ -71,7 +74,7 @@ class Scrape {
         try {
             this.logMessage('Checking proxy....')
             // Authenticate proxy
-            await this.page.authenticate({ username: this.proxy.username, password: this.proxy.password });
+            await this.page.authenticate({ username: this.config.proxy.username, password: this.config.proxy.password });
             // Get IP information from NORD VPN - IP locator
             const proxyCheckUrl = 'https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data';
             await this.page.goto(proxyCheckUrl);
@@ -88,7 +91,8 @@ class Scrape {
             // console.log(proxyInfo)
             this.logMessage(`Proxy working properly`)
         } catch (error) {
-            throw error
+            this.logMessage(`Invalid proxy`);
+            this.continue = false;
         }
     }
 
@@ -271,7 +275,12 @@ class Scrape {
                 await this.checkProxy();
             }
 
-            await this.scrape();
+            if(this.continue){
+                await this.scrape();
+                this.logMessage(`Scraping completed!`)
+            }
+
+
         } catch (error) {
             throw error
         }
@@ -280,7 +289,6 @@ class Scrape {
     async stop() {
         try {
             await this.browser.close();
-            this.logMessage(`Scraping completed!`)
         } catch (error) {
             throw error
         }

@@ -12,13 +12,15 @@ class Search {
 
         // Initialize class properties
         this.config = config.indeed
+        this.config.proxyStatus = config.proxyStatus
+        this.config.proxy = config.proxy
         this.launchOptions = {
-            headless: 'new',
+            headless: config.headless,
             executablePath: path.resolve(config.chromePath),
             args: ['--start-maximized']
         };
         if (this.config && this.config.proxyStatus) {
-            this.launchOptions.args.push(`--proxy-server=http://${config.proxy.host}:${config.proxy.port}`)
+            this.launchOptions.args.push(`--proxy-server=http://${this.config.proxy.host}:${this.config.proxy.port}`)
         }
 
         this.platform = 'Indeed';
@@ -30,6 +32,7 @@ class Search {
         this.jobLocation = searchQuery.jobLocation;
 
         this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
+        this.continue = true;
     }
 
     async initialize() {
@@ -45,13 +48,11 @@ class Search {
         }
     }
 
-    async connectProxy() {
+    async checkProxy() {
         try {
-            this.logMessage('Connecting proxy....')
+            this.logMessage('Checking proxy....')
             await this.page.authenticate({ username: this.config.proxy.username, password: this.config.proxy.password });
-            this.logMessage('Proxy connected')
 
-            this.logMessage('Checking ip location')
             const ip_check_url = 'https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data';
             await this.page.goto(ip_check_url);
 
@@ -64,8 +65,12 @@ class Search {
                 return null;
             });
             this.proxyInfo = ip_data
+
+            // console.log(proxyInfo)
+            this.logMessage(`Proxy working properly`)
         } catch (error) {
-            console.error(error);
+            this.logMessage(`Invalid proxy`);
+            this.continue = false;
         }
     }
 
@@ -98,10 +103,15 @@ class Search {
 
             await this.initialize();
             if (this.config.proxyStatus) {
-                await this.connectProxy();
+                await this.checkProxy();
             }
 
-            await this.search();
+            if (this.continue) {
+                await this.search();
+                this.logMessage(`Search finished!`);
+                this.logMessage(`Total jobs: ${this.totalJobs}`);
+            }
+
         } catch (error) {
             console.error(error);
         }
@@ -110,8 +120,6 @@ class Search {
     async stop() {
         try {
             await this.browser.close();
-            this.logMessage(`Search finished!`);
-            this.logMessage(`Total jobs: ${this.totalJobs}`);
         } catch (error) {
             console.error(error);
         }

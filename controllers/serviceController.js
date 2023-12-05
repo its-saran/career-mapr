@@ -4,7 +4,6 @@ import linkedinScrape from "../services/linkedinScrape.js";
 import linkedinSearch from "../services/linkedinSearch.js";
 import indeedScrape from "../services/indeedScrape.js";
 import indeedSearch from "../services/indeedSearch.js";
-import proxy from '../config/proxy.json' assert { type: "json" };
 import config from '../config/config.json' assert { type: "json" };
 import utils from "../utils/helper.js";
 
@@ -22,6 +21,7 @@ class Controller {
             startScrape: null,
         }
         this.logMessage = (message) => utils.logMessage(this.serviceName, this.serviceType, message);
+        this.continue = true;
 
     }
     async checkQueries() {
@@ -43,7 +43,7 @@ class Controller {
     async getProxyInfo() {
         if (this.controllerStatus.checkConfig) {
             if (config.proxyStatus) {
-                config.proxy = proxy
+                this.config.proxy = utils.getProxyJSON()
                 this.logMessage("Proxy Enabled")
             } else {
                 this.logMessage("Proxy not enabled")
@@ -97,7 +97,6 @@ class Controller {
                     this.search = new indeedSearch(filteredQueries, this.config, this.serviceName, this.serviceType);
                     await this.search.start();
                     await this.search.stop();
-                    this.logMessage(this.search.totalJobs)
 
                 } else if (this.serviceName === 'all') {
 
@@ -155,6 +154,10 @@ class Controller {
 
                     this.jobs = this.scrape.jobs
 
+                    if (!this.scrape.continue) {
+                        this.continue = false;
+                    }
+
                 } else if (this.serviceName === 'linkedin') { 
 
                     const supportedQueries = {
@@ -174,6 +177,10 @@ class Controller {
 
                     this.jobs = this.scrape.jobs
 
+                    if (!this.scrape.continue) {
+                        this.continue = false;
+                    }
+
                 } else if (this.serviceName === 'indeed') {
 
                     const supportedQueries = {
@@ -191,6 +198,10 @@ class Controller {
                     await this.scrape.stop();
 
                     this.jobs = this.scrape.jobs
+
+                    if (!this.scrape.continue) {
+                        this.continue = false;
+                    }
 
                 } else if (this.serviceName === 'all') {
 
@@ -213,6 +224,11 @@ class Controller {
                     await this.indeedScrape.stop();
 
                     this.jobs = [ ...this.naukriScrape.jobs, ...this.linkedinScrape.jobs, ...this.indeedScrape.jobs,]
+
+                    if (!this.naukriScrape.continue || !this.linkedinScrape.continue || !this.indeedScrape.continue) {
+                        this.continue = false;
+                    }
+
                 }
     
                 this.controllerStatus.startScrape = true
@@ -264,7 +280,9 @@ export const serviceController = async (jobConfig, outputConfig) => {
             await controller.startSearch();
         } else {
             await controller.startScrape();
-            await controller.writeFile(outputConfig, controller.jobs)
+            if (controller.continue) {
+                await controller.writeFile(outputConfig, controller.jobs)
+            }
         }
 
     } catch (error) {

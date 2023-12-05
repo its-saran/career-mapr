@@ -10,6 +10,8 @@ class Scrape {
 
         // Initialize class properties
         this.config = config.naukri
+        this.config.proxyStatus = config.proxyStatus
+        this.config.proxy = config.proxy
         this.proxyInfo = 'Not connected';
         this.totalJobs = null;
         this.jobs = []
@@ -41,6 +43,7 @@ class Scrape {
         this.startPage = startPage || this.config.startPage;
 
         this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
+        this.continue = true;
 
     }
     async initialize() {
@@ -67,7 +70,8 @@ class Scrape {
             // console.log(this.proxyInfo)
             this.logMessage(`Proxy working properly`)
         } catch (error) {
-            throw error
+            this.logMessage(`Invalid proxy`);
+            this.continue = false;
         }
     }
     async scrape() {
@@ -195,8 +199,12 @@ class Scrape {
             if (this.proxy) {
                 await this.checkProxy();
             }
-            await this.scrape();
-            this.logMessage(`Scraping completed!`)
+
+            if (this.continue) {
+                await this.scrape();
+                this.logMessage(`Scraping completed!`)
+            }
+
         } catch (error) {
             throw error
         }

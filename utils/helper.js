@@ -163,6 +163,22 @@ const utils = {
         } catch (error) {
         console.error('Error creating CSV file:', error);
         }
+    },
+    getProxyJSON: () => {
+        try {
+            // Specify the path to your JSON file
+            const filePath = config.proxyPath
+
+            // Read the content of the JSON file synchronously
+            const data = fs.readFileSync(filePath, 'utf8');
+
+            // Parse the JSON data
+            const jsonData = JSON.parse(data);
+            
+            return jsonData;
+        } catch (error) {
+            console.error('Proxy file not found:', error);
+        }
     }
 }
 
