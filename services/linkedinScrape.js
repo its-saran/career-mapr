@@ -116,7 +116,7 @@ class Scrape {
             this.totalJobs = await this.page.$eval('.results-context-header__job-count', el => el.textContent.trim())
             this.logMessage(`Expected jobs: ${this.totalJobs}`)
     
-            const viewedAll = '.see-more-jobs__viewed-all.hidden'
+            const viewedAll = '.see-more-jobs__viewed-all'
             const loadMore = 'button.infinite-scroller__show-more-button--visible'
     
             let selectorFound = true;
@@ -129,14 +129,22 @@ class Scrape {
                     break;
                 }
         
+                // see-more-jobs__viewed-all
                 try {
-                    await this.page.waitForSelector(viewedAll, { timeout: 5000 });
                     await this.page.evaluate(() => {
-                        window.scrollTo(0, document.body.scrollHeight);
+                        window.scrollTo(0, document.body.scrollHeight + 500);
                     });
         
                     try {
-                        await this.page.waitForSelector(loadMore, {timeout: 3000});
+                        await this.page.waitForSelector(viewedAll, { timeout: 5000 });
+                        const classList = await this.page.$eval(viewedAll, el =>  Array.from(el.classList));
+
+                        if (!classList.includes('hidden')) {
+                            break;
+                        } 
+                        
+                        
+                        await this.page.waitForSelector(loadMore, {timeout: 5000});
                         pageNo++
         
                         await utils.waitFor(3000)
@@ -153,6 +161,7 @@ class Scrape {
                         this.logMessage(`Page No: ${pageNo}, total: ${extractedItems} jobs found`)
         
                     }
+
                 } catch (error) {
                     // this.logMessage('Loaded all jobs for this search');
                     selectorFound = false;

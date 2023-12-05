@@ -28,8 +28,8 @@ class Search {
         this.page = null;
         this.proxyInfo = 'Not connected';
         this.totalJobs = null;
-        this.jobKeyword = searchQuery.jobKeyword;
-        this.jobLocation = searchQuery.jobLocation;
+        this.jobKeyword = searchQuery.jobKeyword && encodeURIComponent(searchQuery.jobKeyword.toLowerCase());
+        this.jobLocation = searchQuery.jobLocation && encodeURIComponent(searchQuery.jobLocation.toLowerCase());
 
         this.logMessage = (message) => utils.logMessage(serviceName, serviceType, message);
         this.continue = true;

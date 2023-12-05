@@ -33,9 +33,8 @@ class Scrape {
 
         this.startPage = this.config.startPage;
         this.maxJobs = this.config.maxJobs;
-
-        this.jobKeyword = searchQuery.jobKeyword;
-        this.jobLocation = searchQuery.jobLocation;
+        this.jobKeyword = searchQuery.jobKeyword && encodeURIComponent(searchQuery.jobKeyword.toLowerCase());
+        this.jobLocation = searchQuery.jobLocation && encodeURIComponent(searchQuery.jobLocation.toLowerCase());
         if (searchQuery.maxJobs) this.maxJobs = searchQuery.maxJobs;
         if (searchQuery.startPage) this.startPage = searchQuery.startPage;
 
@@ -105,8 +104,7 @@ class Scrape {
                     url = `https://in.indeed.com/jobs?q=${this.jobKeyword}&l=${this.jobLocation}&start=${pageIndex}`; 
                 }
 
-                await this.page.goto(url);
-                // this.logMessage(`Visiting url: ${url}`)
+                await this.page.goto(url, { waitUntil: 'networkidle0' });
                 await this.page.waitForSelector('#mosaic-jobResults')
                 await this.page.waitForSelector('.jobsearch-JobCountAndSortPane-jobCount')
                 this.totalJobs = await this.page.$eval('.jobsearch-JobCountAndSortPane-jobCount', el => el.textContent.replace(/\D/g, ''))
@@ -116,16 +114,16 @@ class Scrape {
                 this.logMessage(`Page No: ${pageNo}, ${url}`)
                 await this.page.waitForSelector('.jobTitle', { timeout: 60000 });
 
-                const closeButton = await this.page.$('.icl-CloseButton');
-                if (closeButton) await this.page.click('.icl-CloseButton');
+                const closeButton = await this.page.$('#mosaic-desktopserpjapopup button[aria-label="close"]');
+                if (closeButton) await closeButton.click();
                 const jobItems = await this.page.$$('[data-testid="slider_item"]')
 
                 for (const job of jobItems) {
                     await job.click()
                     await utils.waitFor(this.config.delay)
 
-                    await this.page.waitForSelector('#jobDescriptionText', { timeout: 50000 })
-                    await this.page.waitForSelector('.jcs-JobTitle', { timeout: 50000 })
+                    await this.page.waitForSelector('#jobDescriptionText', { timeout: 60000 })
+                    await this.page.waitForSelector('.jcs-JobTitle', { timeout: 60000 })
 
                     const title = await job.$eval('.jcs-JobTitle', el => el.textContent.trim());
                     const jobLink = await job.$eval('.jcs-JobTitle', el => el.getAttribute('href').trim())

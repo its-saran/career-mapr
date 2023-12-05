@@ -34,7 +34,7 @@
     },
     "indeed": {
         "delay": 3000,
-        "maxJobs": 10,
+        "maxJobs": 10000,
         "startPage": 1,
         "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
         "viewportSize": {
@@ -50,7 +50,7 @@
         }
     },
     "chromePath": "./resources/chrome-win64/chrome.exe",
-    "outputPath": "./Outputs/",
+    "outputPath": "./outputs/",
     "headless": "new",
     "proxyStatus": false,
     "proxyPath": "./config/proxy.json"
